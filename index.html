@@ -422,6 +422,13 @@
           ctx.font = `${fruit.radius * 2}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
+          // 딸기만 씨앗 가리기
+          if (fruit.type === 1) {
+            ctx.fillStyle = '#FF6B9D';
+            ctx.beginPath();
+            ctx.arc(fruit.x, fruit.y, fruit.radius * 0.85, 0, Math.PI * 2);
+            ctx.fill();
+          }
           ctx.fillText(type.emoji, fruit.x, fruit.y);
           
           ctx.fillStyle = '#000';
