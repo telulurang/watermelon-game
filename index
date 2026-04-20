@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍉 수박게임</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fbc2eb 0%, #ffeaa7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 15px;
+      max-width: 100%;
+      width: 100%;
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .score-box {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .score-display {
+      display: inline-block;
+      background: #d4edda;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+    
+    .score-label {
+      font-size: 0.8em;
+      color: #666;
+    }
+    
+    .score-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #28a745;
+    }
+    
+    .game-over {
+      background: #f8d7da;
+      border: 2px solid #f5c6cb;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .game-over p {
+      color: #721c24;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+    
+    #gameCanvas {
+      border: 4px solid #333;
+      border-radius: 10px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto 15px;
+      touch-action: none;
+      max-width: 100%;
+      height: auto;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #28a745 0%, #17a2b8 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .instructions {
+      text-align: center;
+      color: #666;
+      font-size: 0.85em;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍉 수박게임</h1>
+    
+    <div class="score-box">
+      <div class="score-display">
+        <div class="score-label">점수</div>
+        <div class="score-value" id="score">0</div>
+      </div>
+    </div>
+    
+    <div id="winBox" style="display: none;" class="game-over" style="background: #fff3cd; border-color: #ffeaa7;">
+      <p style="color: #856404;">🎉 수박 완성! 최종 점수: <span id="winScore">0</span>점! 🍉</p>
+    </div>
+    
+    <div id="gameOverBox" style="display: none;" class="game-over">
+      <p>게임 오버! 최종 점수: <span id="finalScore">0</span></p>
+    </div>
+    
+    <canvas id="gameCanvas" width="400" height="450"></canvas>
+    
+    <button id="resetBtn">새 게임</button>
+    
+    <div class="instructions">
+      💡 클릭해서 과일을 떨어뜨리세요!<br/>
+      같은 과일끼리 합쳐집니다
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const finalScoreEl = document.getElementById('finalScore');
+    const winScoreEl = document.getElementById('winScore');
+    const gameOverBox = document.getElementById('gameOverBox');
+    const winBox = document.getElementById('winBox');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const width = 400;
+    const height = 450;
+    const gravity = 0.4;
+
+    const fruitTypes = [
+      { emoji: '🍒', radius: 15, points: 1 },
+      { emoji: '🍓', radius: 20, points: 3 },
+      { emoji: '🍇', radius: 25, points: 6 },
+      { emoji: '🍊', radius: 30, points: 10 },
+      { emoji: '🍋', radius: 35, points: 15 },
+      { emoji: '🍎', radius: 40, points: 21 },
+      { emoji: '🍑', radius: 45, points: 28 },
+      { emoji: '🍍', radius: 50, points: 36 },
+      { emoji: '🥥', radius: 55, points: 45 },
+      { emoji: '🍉', radius: 60, points: 55 }
+    ];
+
+    let gameState = {
+      fruits: [],
+      dropping: false,
+      mouseX: 200,
+      animationFrame: 0,
+      score: 0,
+      gameOver: false,
+      won: false,
+      nextFruit: Math.floor(Math.random() * 5),
+      winningWatermelon: null,
+      explosionFrame: 0
+    };
+
+    function gameLoop() {
+      gameState.animationFrame++;
+      
+      // 승리 애니메이션 중이면
+      if (gameState.winningWatermelon) {
+        gameState.explosionFrame++;
+        ctx.clearRect(0, 0, width, height);
+        
+        // 배경
+        ctx.fillStyle = '#fff5e6';
+        ctx.fillRect(0, 0, width, height);
+        
+        const melon = gameState.winningWatermelon;
+        const progress = gameState.explosionFrame / 60;
+        
+        if (progress < 0.5) {
+          // 커지면서 웃음
+          const scale = 1 + progress * 0.8;
+          const size = melon.radius * 2 * scale;
+          
+          ctx.font = `${size}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🍉', melon.x, melon.y);
+          
+          // 웃는 눈
+          ctx.fillStyle = '#000';
+          ctx.beginPath();
+          ctx.arc(melon.x - melon.radius * 0.3 * scale, melon.y - melon.radius * 0.2 * scale, 
+                  melon.radius * 0.05 * scale, 0, Math.PI);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(melon.x + melon.radius * 0.3 * scale, melon.y - melon.radius * 0.2 * scale, 
+                  melon.radius * 0.05 * scale, 0, Math.PI);
+          ctx.fill();
+          
+          // 웃는 입
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = melon.radius * 0.15 * scale;
+          ctx.beginPath();
+          ctx.arc(melon.x, melon.y + melon.radius * 0.3 * scale, 
+                  melon.radius * 0.4 * scale, 0, Math.PI);
+          ctx.stroke();
+          
+          // ㅋㅋㅋ
+          ctx.font = `${30 * scale}px Arial`;
+          ctx.fillStyle = '#ff6b6b';
+          ctx.fillText('ㅋㅋㅋ', melon.x, melon.y - melon.radius * 1.5 * scale);
+          
+        } else if (progress < 1) {
+          // 터지는 효과
+          const explodeProgress = (progress - 0.5) * 2;
+          
+          for (let i = 0; i < 8; i++) {
+            const angle = (Math.PI * 2 * i) / 8;
+            const distance = explodeProgress * 150;
+            const x = melon.x + Math.cos(angle) * distance;
+            const y = melon.y + Math.sin(angle) * distance;
+            const size = 30 * (1 - explodeProgress);
+            
+            ctx.font = `${size}px Arial`;
+            ctx.fillText('💥', x, y);
+          }
+          
+          ctx.font = `${80 * (1 - explodeProgress)}px Arial`;
+          ctx.fillText('⭐', melon.x, melon.y);
+          
+        } else {
+          // 승리!
+          gameState.won = true;
+          winScoreEl.textContent = gameState.score;
+          winBox.style.display = 'block';
+        }
+        
+        requestAnimationFrame(gameLoop);
+        return;
+      }
+      
+      if (gameState.gameOver) return;
+      
+      ctx.clearRect(0, 0, width, height);
+
+      // 배경
+      ctx.fillStyle = '#fff5e6';
+      ctx.fillRect(0, 0, width, height);
+
+      // 벽
+      ctx.fillStyle = '#8b4513';
+      ctx.fillRect(0, 0, 10, height);
+      ctx.fillRect(width - 10, 0, 10, height);
+      ctx.fillRect(0, height - 10, width, 10);
+
+      // 게임오버 라인
+      ctx.strokeStyle = '#ff0000';
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(10, 100);
+      ctx.lineTo(width - 10, 100);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 떨어뜨릴 과일 미리보기
+      if (!gameState.won && !gameState.dropping) {
+        const fruit = fruitTypes[gameState.nextFruit];
+        ctx.font = `${fruit.radius * 2}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(fruit.emoji, gameState.mouseX, 50);
+      }
+
+      // 물리 업데이트
+      gameState.fruits.forEach((fruit) => {
+        fruit.vy += gravity;
+        
+        const onGround = fruit.y + fruit.radius >= height - 11;
+        const touchingOther = gameState.fruits.some(other => {
+          if (other === fruit) return false;
+          const dx = other.x - fruit.x;
+          const dy = other.y - fruit.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          return dist < fruit.radius + other.radius + 2;
+        });
+        
+        fruit.isMoving = Math.abs(fruit.vy) > 0.5 || Math.abs(fruit.vx) > 0.5;
+        
+        if (onGround || touchingOther) {
+          fruit.vy *= 0.85;
+          fruit.vx *= 0.85;
+        } else {
+          fruit.vy *= 0.98;
+          fruit.vx *= 0.98;
+        }
+        
+        fruit.y += fruit.vy;
+        fruit.x += fruit.vx;
+
+        if (fruit.x - fruit.radius < 10) {
+          fruit.x = 10 + fruit.radius;
+          fruit.vx = Math.abs(fruit.vx) * 0.2;
+        }
+        if (fruit.x + fruit.radius > width - 10) {
+          fruit.x = width - 10 - fruit.radius;
+          fruit.vx = -Math.abs(fruit.vx) * 0.2;
+        }
+
+        if (fruit.y + fruit.radius > height - 10) {
+          fruit.y = height - 10 - fruit.radius;
+          fruit.vy = -Math.abs(fruit.vy) * 0.1;
+          if (Math.abs(fruit.vy) < 0.5 && Math.abs(fruit.vx) < 0.5) {
+            fruit.vy = 0;
+            fruit.vx = 0;
+          }
+        }
+
+        fruit.isColliding = fruit.lastCollisionTime && (Date.now() - fruit.lastCollisionTime < 1000);
+      });
+
+      // 충돌 처리
+      for (let iter = 0; iter < 3; iter++) {
+        for (let i = 0; i < gameState.fruits.length; i++) {
+          for (let j = i + 1; j < gameState.fruits.length; j++) {
+            const fruit1 = gameState.fruits[i];
+            const fruit2 = gameState.fruits[j];
+
+            const dx = fruit2.x - fruit1.x;
+            const dy = fruit2.y - fruit1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const minDist = fruit1.radius + fruit2.radius;
+
+            if (dist < minDist && dist > 0) {
+              if (fruit1.type === fruit2.type && fruit1.type < 9 && !fruit1.merging && !fruit2.merging) {
+                fruit1.merging = true;
+                fruit2.merging = true;
+                
+                const newType = fruit1.type + 1;
+                
+                setTimeout(() => {
+                  const idx1 = gameState.fruits.indexOf(fruit1);
+                  const idx2 = gameState.fruits.indexOf(fruit2);
+                  if (idx1 !== -1) gameState.fruits.splice(idx1, 1);
+                  if (idx2 !== -1) gameState.fruits.splice(gameState.fruits.indexOf(fruit2), 1);
+                  
+                  gameState.fruits.push({
+                    x: (fruit1.x + fruit2.x) / 2,
+                    y: (fruit1.y + fruit2.y) / 2,
+                    vx: 0,
+                    vy: 0,
+                    type: newType,
+                    radius: fruitTypes[newType].radius,
+                    merging: false,
+                    isMoving: false,
+                    isColliding: false,
+                    lastCollisionTime: null
+                  });
+                  
+                  gameState.score += fruitTypes[newType].points;
+                  scoreEl.textContent = gameState.score;
+                  
+                  // 수박 만들었을 때!
+                  if (newType === 9) {
+                    gameState.winningWatermelon = gameState.fruits[gameState.fruits.length - 1];
+                    gameState.explosionFrame = 60;
+                  }
+                }, 50);
+                
+                continue;
+              }
+
+              const overlap = minDist - dist;
+              const nx = dx / dist;
+              const ny = dy / dist;
+
+              const collisionSpeed = Math.abs(fruit1.vx) + Math.abs(fruit1.vy) + Math.abs(fruit2.vx) + Math.abs(fruit2.vy);
+              if (collisionSpeed > 2) {
+                fruit1.lastCollisionTime = Date.now();
+                fruit2.lastCollisionTime = Date.now();
+              }
+
+              fruit1.x -= nx * overlap * 0.5;
+              fruit1.y -= ny * overlap * 0.5;
+              fruit2.x += nx * overlap * 0.5;
+              fruit2.y += ny * overlap * 0.5;
+
+              fruit1.x = Math.max(10 + fruit1.radius, Math.min(width - 10 - fruit1.radius, fruit1.x));
+              fruit1.y = Math.max(fruit1.radius, Math.min(height - 10 - fruit1.radius, fruit1.y));
+              fruit2.x = Math.max(10 + fruit2.radius, Math.min(width - 10 - fruit2.radius, fruit2.x));
+              fruit2.y = Math.max(fruit2.radius, Math.min(height - 10 - fruit2.radius, fruit2.y));
+            }
+          }
+        }
+      }
+
+      // 과일 그리기
+      gameState.fruits.forEach((fruit) => {
+        if (!fruit.merging) {
+          const type = fruitTypes[fruit.type];
+          
+          ctx.font = `${fruit.radius * 2}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(type.emoji, fruit.x, fruit.y);
+          
+          ctx.fillStyle = '#000';
+          const eyeY = fruit.y - fruit.radius * 0.2;
+          const eyeSize = fruit.isColliding ? fruit.radius * 0.25 : fruit.radius * 0.15;
+          ctx.beginPath();
+          ctx.arc(fruit.x - fruit.radius * 0.3, eyeY, eyeSize, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(fruit.x + fruit.radius * 0.3, eyeY, eyeSize, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = fruit.radius * 0.1;
+          if (fruit.isColliding) {
+            ctx.beginPath();
+            ctx.moveTo(fruit.x, fruit.y + fruit.radius * 0.1);
+            ctx.lineTo(fruit.x - fruit.radius * 0.15, fruit.y + fruit.radius * 0.35);
+            ctx.lineTo(fruit.x + fruit.radius * 0.15, fruit.y + fruit.radius * 0.35);
+            ctx.closePath();
+            ctx.stroke();
+          } else {
+            ctx.beginPath();
+            ctx.arc(fruit.x, fruit.y + fruit.radius * 0.2, fruit.radius * 0.3, 0, Math.PI);
+            ctx.stroke();
+          }
+          
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = fruit.radius * 0.15;
+          ctx.lineCap = 'round';
+          const handWave = fruit.isMoving ? Math.sin(gameState.animationFrame * 0.3) * 0.3 : 0;
+          ctx.beginPath();
+          ctx.moveTo(fruit.x - fruit.radius * 0.7, fruit.y);
+          ctx.lineTo(fruit.x - fruit.radius * 1.1, fruit.y - fruit.radius * (0.3 + handWave));
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(fruit.x + fruit.radius * 0.7, fruit.y);
+          ctx.lineTo(fruit.x + fruit.radius * 1.1, fruit.y - fruit.radius * (0.3 - handWave));
+          ctx.stroke();
+        }
+      });
+
+      // 게임오버 체크
+      if (gameState.fruits.length >= 5) {
+        gameState.fruits.forEach((fruit) => {
+          if (Math.abs(fruit.vy) < 0.3 && Math.abs(fruit.vx) < 0.3 && fruit.y - fruit.radius < 95) {
+            gameState.gameOver = true;
+            gameOverBox.style.display = 'block';
+            finalScoreEl.textContent = gameState.score;
+          }
+        });
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (gameState.gameOver) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const fruit = fruitTypes[gameState.nextFruit];
+      gameState.mouseX = Math.max(10 + fruit.radius, Math.min(390 - fruit.radius, x));
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (gameState.gameOver) return;
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const fruit = fruitTypes[gameState.nextFruit];
+      gameState.mouseX = Math.max(10 + fruit.radius, Math.min(390 - fruit.radius, x));
+    });
+
+    function dropFruit() {
+      if (gameState.gameOver || gameState.won || gameState.dropping) return;
+
+      const fruit = fruitTypes[gameState.nextFruit];
+      gameState.fruits.push({
+        x: gameState.mouseX,
+        y: 50,
+        vx: 0,
+        vy: 0,
+        type: gameState.nextFruit,
+        radius: fruit.radius,
+        merging: false,
+        isMoving: true,
+        isColliding: false,
+        lastCollisionTime: null
+      });
+
+      gameState.dropping = true;
+      setTimeout(() => {
+        gameState.dropping = false;
+        gameState.nextFruit = Math.floor(Math.random() * 5);
+      }, 500);
+    }
+
+    canvas.addEventListener('click', dropFruit);
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      dropFruit();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      gameState = {
+        fruits: [],
+        dropping: false,
+        mouseX: 200,
+        animationFrame: 0,
+        score: 0,
+        gameOver: false,
+        won: false,
+        nextFruit: Math.floor(Math.random() * 5),
+        winningWatermelon: null,
+        explosionFrame: 0
+      };
+      scoreEl.textContent = '0';
+      gameOverBox.style.display = 'none';
+      winBox.style.display = 'none';
+      gameLoop();
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>
