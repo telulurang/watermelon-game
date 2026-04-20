@@ -353,7 +353,7 @@
             const minDist = fruit1.radius + fruit2.radius;
 
             if (dist < minDist && dist > 0) {
-              if (fruit1.type === fruit2.type && fruit1.type < 9 && !fruit1.merging && !fruit2.merging) {
+              if (fruit1.type === fruit2.type && fruit1.type < 10 && !fruit1.merging && !fruit2.merging) {
                 fruit1.merging = true;
                 fruit2.merging = true;
                 
@@ -382,7 +382,7 @@
                   scoreEl.textContent = gameState.score;
                   
                   // 수박 만들었을 때!
-                  if (newType === 9) {
+                  if (newType === 10) {
                     gameState.winningWatermelon = gameState.fruits[gameState.fruits.length - 1];
                     gameState.explosionFrame = 120;
                   }
