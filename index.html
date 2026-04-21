@@ -277,29 +277,32 @@ async function renderRanking() {
 }
 
 async function showRankPopup() {
-  const list = await fbLoad();
-  const body = document.getElementById('rankBody');
-  if (!list.length) { body.innerHTML='<p style="text-align:center;color:#aaa;padding:20px;">아직 기록이 없어요!</p>'; }
-  else {
-    const top10 = list.slice(0,10);
-    const myIdx = myRankId ? list.findIndex(r=>r.id===myRankId) : -1;
-    let rows = top10.map((r,i)=>{
-      const mine = myRankId && r.id===myRankId;
-      return `<tr class="${mine?'mine-row':''}">
-        <td>${medals[i]??(i+1+'위')}</td>
-        <td>${r.name}</td><td>${r.score.toLocaleString()}점</td><td>${r.date}</td>
-      </tr>`;
-    }).join('');
-    if (myIdx>=10) {
-      const r=list[myIdx];
-      rows+=`<tr><td colspan="4" class="my-sep">···</td></tr>
-      <tr class="mine-row"><td>${myIdx+1}위</td><td>${r.name}</td><td>${r.score.toLocaleString()}점</td><td>${r.date}</td></tr>`;
-    }
-    body.innerHTML=`<table class="rtable">
-      <thead><tr><th>순위</th><th>닉네임</th><th>점수</th><th>날짜</th></tr></thead>
-      <tbody>${rows}</tbody></table>`;
-  }
   document.getElementById('rankPopup').classList.add('show');
+  const body = document.getElementById('rankBody');
+  body.innerHTML = '<p style="text-align:center;color:#aaa;padding:20px;">불러오는 중...</p>';
+  const list = await fbLoad();
+  const medals = ['🥇','🥈','🥉'];
+  if (!list.length) {
+    body.innerHTML = '<p style="text-align:center;color:#aaa;padding:20px;">아직 기록이 없어요!</p>';
+    return;
+  }
+  const top10 = list.slice(0,10);
+  const myIdx = myRankId ? list.findIndex(r=>r.id===myRankId) : -1;
+  let rows = top10.map((r,i)=>{
+    const mine = myRankId && r.id===myRankId;
+    return `<tr class="${mine?'mine-row':''}">
+      <td>${medals[i]??(i+1+'위')}</td>
+      <td>${r.name}</td><td>${r.score.toLocaleString()}점</td><td>${r.date}</td>
+    </tr>`;
+  }).join('');
+  if (myIdx>=10) {
+    const r=list[myIdx];
+    rows+=`<tr><td colspan="4" class="my-sep">···</td></tr>
+    <tr class="mine-row"><td>${myIdx+1}위</td><td>${r.name}</td><td>${r.score.toLocaleString()}점</td><td>${r.date}</td></tr>`;
+  }
+  body.innerHTML=`<table class="rtable">
+    <thead><tr><th>순위</th><th>닉네임</th><th>점수</th><th>날짜</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
 }
 
 // ── 닉네임 등록 ───────────────────────────────────────
