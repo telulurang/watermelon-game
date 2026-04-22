@@ -149,15 +149,14 @@
 
   <div class="score-row">
     <div class="side-btns">
-      <button class="sbtn btn-rank" id="rankBtn">🏆 랭킹</button>
+      <button class="sbtn btn-end" id="endBtn">⏹ 종료</button>
     </div>
     <div class="score-box">
       <div class="score-label">점수</div>
       <div class="score-value" id="score">0</div>
     </div>
     <div class="side-btns">
-      <button class="sbtn btn-end" id="endBtn">⏹ 종료</button>
-
+      <button class="sbtn btn-rank" id="rankBtn">🏆 랭킹</button>
     </div>
   </div>
 
@@ -475,9 +474,9 @@ function gameLoop() {
     ctx.strokeStyle='#000';ctx.lineWidth=fruit.radius*0.15;ctx.lineCap='round';
     const wave=fruit.isMoving?Math.sin(gs.frame*0.3)*0.3:0;
     ctx.beginPath();ctx.moveTo(fruit.x-fruit.radius*0.7,fruit.y);
-    ctx.lineTo(fruit.x-fruit.radius*1.1,fruit.y-fruit.radius*(0.3+wave));ctx.stroke();
+    ctx.lineTo(fruit.x-fruit.radius*0.9,fruit.y-fruit.radius*(0.2+wave*0.5));ctx.stroke();
     ctx.beginPath();ctx.moveTo(fruit.x+fruit.radius*0.7,fruit.y);
-    ctx.lineTo(fruit.x+fruit.radius*1.1,fruit.y-fruit.radius*(0.3-wave));ctx.stroke();
+    ctx.lineTo(fruit.x+fruit.radius*0.9,fruit.y-fruit.radius*(0.2-wave*0.5));ctx.stroke();
   });
 
   const now=Date.now();
