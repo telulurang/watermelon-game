@@ -312,7 +312,7 @@ const winScoreEl  = document.getElementById('winScore');
 const gameOverBox = document.getElementById('gameOverBox');
 const winBox      = document.getElementById('winBox');
 
-const W=400, H=450, GRAVITY=0.4;
+const W=400, H=450, GRAVITY=0.6;
 // 선을 높이고, 판정 유예시간을 단축
 const GAMEOVER_Y = 75;       // 기존 100 → 75 (선 높임)
 const GAMEOVER_GRACE = 500;  // 기존 1500ms → 500ms (더 빨리 게임오버)
@@ -482,7 +482,6 @@ function gameLoop() {
   const now=Date.now();
   for(const fruit of gs.fruits){
     if(fruit.merging||now-fruit.spawnTime<GAMEOVER_GRACE) continue;
-    if(Math.abs(fruit.vy)>0.8||Math.abs(fruit.vx)>0.8) continue;
     if(fruit.y-fruit.radius<GAMEOVER_Y){triggerGameOver();return;}
   }
   rafId=requestAnimationFrame(gameLoop);
