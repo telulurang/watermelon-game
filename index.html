@@ -33,7 +33,6 @@
     }
     h1 { text-align:center; font-size:1.4em; margin-bottom:10px; color:#333; }
 
-    /* 점수+버튼 행 */
     .score-row {
       display:flex; align-items:center; justify-content:space-between;
       margin-bottom:10px; gap:6px;
@@ -48,11 +47,9 @@
       transition:all .2s; white-space:nowrap; color:white;
     }
     .sbtn:hover { transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,.15); }
-    .btn-new  { background:linear-gradient(135deg,#28a745,#17a2b8); }
     .btn-end  { background:linear-gradient(135deg,#dc3545,#fd7e14); }
     .btn-rank { background:linear-gradient(135deg,#f59e0b,#ef4444); padding:12px 10px; }
 
-    /* 알림 박스 */
     .alert { border-radius:10px; padding:12px; margin-bottom:10px; text-align:center; display:none; }
     .alert.red  { background:#f8d7da; border:2px solid #f5c6cb; }
     .alert.red p  { color:#721c24; font-weight:bold; }
@@ -72,14 +69,12 @@
     .name-btn:hover { background:#218838; }
     .name-btn:disabled { opacity:.5; cursor:not-allowed; }
 
-    /* 캔버스 */
     #gameCanvas {
       border:4px solid #333; border-radius:10px;
       cursor:pointer; display:block; margin:0 auto 10px;
       touch-action:none; max-width:100%;
     }
 
-    /* 새게임 큰 버튼 */
     .main-btn {
       width:100%; padding:12px;
       background:linear-gradient(135deg,#28a745,#17a2b8);
@@ -89,7 +84,6 @@
     }
     .main-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,.2); }
 
-    /* 하단 랭킹 */
     .ranking { background:#f8f9fa; border-radius:12px; padding:12px; }
     .ranking h2 { text-align:center; font-size:1em; color:#555; margin-bottom:8px; }
     .rlist { list-style:none; }
@@ -109,7 +103,6 @@
 
     .instructions { text-align:center; color:#666; font-size:.82em; margin-top:8px; line-height:1.4; }
 
-    /* 팝업 공통 */
     .overlay {
       position:fixed; inset:0; background:rgba(0,0,0,.55);
       display:none; align-items:center; justify-content:center; z-index:1000;
@@ -129,7 +122,6 @@
     }
     .close-x:hover { background:#ddd; }
 
-    /* 랭킹 팝업 테이블 */
     .rtable { width:100%; border-collapse:collapse; }
     .rtable th {
       background:linear-gradient(135deg,#fbc2eb,#ffeaa7);
@@ -140,7 +132,6 @@
     .rtable tr.mine-row td { background:#fffde7; font-weight:bold; }
     .my-sep { text-align:center; color:#bbb; padding:4px; font-size:.85em; }
 
-    /* 확인 팝업 */
     .confirm-box {
       background:white; border-radius:16px; padding:24px;
       width:280px; text-align:center;
@@ -156,22 +147,20 @@
 <div class="wrap">
   <h1>🍉 수박게임</h1>
 
-  <!-- 점수+버튼 -->
   <div class="score-row">
     <div class="side-btns">
-      <button class="sbtn btn-new" id="resetBtn2">🔄 새게임</button>
-      <button class="sbtn btn-end" id="endBtn">⏹ 종료</button>
+      <button class="sbtn btn-rank" id="rankBtn">🏆 랭킹</button>
     </div>
     <div class="score-box">
       <div class="score-label">점수</div>
       <div class="score-value" id="score">0</div>
     </div>
     <div class="side-btns">
-      <button class="sbtn btn-rank" id="rankBtn">🏆 랭킹</button>
+      <button class="sbtn btn-end" id="endBtn">⏹ 종료</button>
+
     </div>
   </div>
 
-  <!-- 게임오버 -->
   <div id="gameOverBox" class="alert red">
     <p>게임 오버! 최종 점수: <span id="finalScore">0</span>점</p>
     <div class="name-row">
@@ -180,7 +169,6 @@
     </div>
   </div>
 
-  <!-- 수박 완성 -->
   <div id="winBox" class="alert yel">
     <p>🎉 수박 완성! 최종 점수: <span id="winScore">0</span>점!</p>
     <div class="name-row">
@@ -192,7 +180,6 @@
   <canvas id="gameCanvas" width="400" height="450"></canvas>
   <button class="main-btn" id="resetBtn">새 게임</button>
 
-  <!-- 하단 랭킹 -->
   <div class="ranking">
     <h2>🏆 랭킹 TOP 10</h2>
     <ul class="rlist" id="rlist"></ul>
@@ -200,7 +187,6 @@
   <div class="instructions">💡 클릭해서 과일을 떨어뜨리세요!<br>같은 과일끼리 합쳐집니다</div>
 </div>
 
-<!-- 종료 확인 팝업 -->
 <div class="overlay" id="confirmOverlay">
   <div class="confirm-box">
     <p>게임을 종료하시겠어요?</p>
@@ -211,7 +197,6 @@
   </div>
 </div>
 
-<!-- 랭킹 팝업 -->
 <div class="overlay" id="rankPopup">
   <div class="popup-box">
     <div class="popup-head">
@@ -223,7 +208,6 @@
 </div>
 
 <script>
-// ── Firebase 랭킹 ──────────────────────────────────────
 async function fbSave(score, name) {
   try {
     const now = new Date();
@@ -244,7 +228,6 @@ async function fbLoad() {
   } catch(e) { return []; }
 }
 
-// ── 랭킹 렌더 ─────────────────────────────────────────
 let myRankId = null;
 const medals = ['🥇','🥈','🥉'];
 
@@ -281,7 +264,6 @@ async function showRankPopup() {
   const body = document.getElementById('rankBody');
   body.innerHTML = '<p style="text-align:center;color:#aaa;padding:20px;">불러오는 중...</p>';
   const list = await fbLoad();
-  const medals = ['🥇','🥈','🥉'];
   if (!list.length) {
     body.innerHTML = '<p style="text-align:center;color:#aaa;padding:20px;">아직 기록이 없어요!</p>';
     return;
@@ -305,7 +287,6 @@ async function showRankPopup() {
     <tbody>${rows}</tbody></table>`;
 }
 
-// ── 닉네임 등록 ───────────────────────────────────────
 function bindSubmit(inputId, btnId, alertEl) {
   const input = document.getElementById(inputId);
   const btn   = document.getElementById(btnId);
@@ -324,7 +305,6 @@ function bindSubmit(inputId, btnId, alertEl) {
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
 }
 
-// ── 게임 상태 ─────────────────────────────────────────
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreEl     = document.getElementById('score');
@@ -333,7 +313,10 @@ const winScoreEl  = document.getElementById('winScore');
 const gameOverBox = document.getElementById('gameOverBox');
 const winBox      = document.getElementById('winBox');
 
-const W=400, H=450, GRAVITY=0.4, GAMEOVER_Y=100;
+const W=400, H=450, GRAVITY=0.4;
+// 선을 높이고, 판정 유예시간을 단축
+const GAMEOVER_Y = 75;       // 기존 100 → 75 (선 높임)
+const GAMEOVER_GRACE = 500;  // 기존 1500ms → 500ms (더 빨리 게임오버)
 
 const fruitTypes=[
   {emoji:'🍒',  radius:15, points:1 },
@@ -364,7 +347,6 @@ function triggerGameOver() {
   gameOverBox.style.display='block';
 }
 
-// ── 게임 루프 ─────────────────────────────────────────
 function gameLoop() {
   gs.frame++;
 
@@ -408,7 +390,7 @@ function gameLoop() {
   if(!gs.dropping){
     const f=fruitTypes[gs.nextFruit];
     ctx.font=`${f.radius*2}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(f.emoji,gs.mouseX,50);
+    ctx.fillText(f.emoji,gs.mouseX,GAMEOVER_Y/2);
   }
 
   gs.fruits.forEach(fruit=>{
@@ -472,7 +454,7 @@ function gameLoop() {
     if(fruit.merging) return;
     const type=fruitTypes[fruit.type];
     ctx.save();
-    ctx.translate(fruit.x,fruit.y); ctx.rotate(0);
+    ctx.translate(fruit.x,fruit.y);
     ctx.font=`${fruit.radius*2}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(type.emoji,0,0);
     ctx.restore();
@@ -500,14 +482,13 @@ function gameLoop() {
 
   const now=Date.now();
   for(const fruit of gs.fruits){
-    if(fruit.merging||now-fruit.spawnTime<1500) continue;
+    if(fruit.merging||now-fruit.spawnTime<GAMEOVER_GRACE) continue;
     if(Math.abs(fruit.vy)>0.8||Math.abs(fruit.vx)>0.8) continue;
     if(fruit.y-fruit.radius<GAMEOVER_Y){triggerGameOver();return;}
   }
   rafId=requestAnimationFrame(gameLoop);
 }
 
-// ── 입력 ─────────────────────────────────────────────
 canvas.addEventListener('mousemove',e=>{
   if(gs.gameOver) return;
   const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
@@ -524,7 +505,7 @@ canvas.addEventListener('touchmove',e=>{
 function dropFruit(){
   if(gs.gameOver||gs.won||gs.dropping) return;
   const f=fruitTypes[gs.nextFruit];
-  gs.fruits.push({x:gs.mouseX,y:50,vx:0,vy:0,type:gs.nextFruit,radius:f.radius,
+  gs.fruits.push({x:gs.mouseX,y:GAMEOVER_Y/2,vx:0,vy:0,type:gs.nextFruit,radius:f.radius,
                   merging:false,isMoving:true,isColliding:false,lastHit:null,spawnTime:Date.now()});
   gs.dropping=true;
   setTimeout(()=>{gs.dropping=false;gs.nextFruit=Math.floor(Math.random()*5);},500);
@@ -532,7 +513,6 @@ function dropFruit(){
 canvas.addEventListener('click',dropFruit);
 canvas.addEventListener('touchend',e=>{e.preventDefault();dropFruit();});
 
-// ── 리셋 ─────────────────────────────────────────────
 function doReset(){
   if(rafId) cancelAnimationFrame(rafId);
   myRankId=null; gs=newState();
@@ -546,9 +526,6 @@ function doReset(){
 }
 
 document.getElementById('resetBtn').addEventListener('click',doReset);
-document.getElementById('resetBtn2').addEventListener('click',doReset);
-
-// ── 종료 ─────────────────────────────────────────────
 document.getElementById('endBtn').addEventListener('click',()=>{
   document.getElementById('confirmOverlay').classList.add('show');
 });
@@ -563,7 +540,6 @@ document.getElementById('confirmYes').addEventListener('click',()=>{
   gameOverBox.style.display='block';
 });
 
-// ── 랭킹 팝업 ─────────────────────────────────────────
 document.getElementById('rankBtn').addEventListener('click', showRankPopup);
 document.getElementById('closeRank').addEventListener('click',()=>{
   document.getElementById('rankPopup').classList.remove('show');
@@ -573,11 +549,9 @@ document.getElementById('rankPopup').addEventListener('click',e=>{
     document.getElementById('rankPopup').classList.remove('show');
 });
 
-// ── 닉네임 바인딩 ─────────────────────────────────────
 bindSubmit('overName','overSubmit',gameOverBox);
 bindSubmit('winName', 'winSubmit', winBox);
 
-// ── 시작 ─────────────────────────────────────────────
 renderRanking();
 gameLoop();
 </script>
