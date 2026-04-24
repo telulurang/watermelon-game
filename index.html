@@ -406,6 +406,18 @@ canvas.addEventListener('touchmove',e=>{
     const x=(e.touches[0].clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
     gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
 },{passive:false});
+document.addEventListener('mousemove',e=>{
+    if(gs.gameOver||e.target===canvas)return;
+    const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
+    const x=(e.clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
+    gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
+});
+document.addEventListener('touchmove',e=>{
+    if(gs.gameOver||e.target===canvas)return;
+    const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
+    const x=(e.touches[0].clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
+    gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
+},{passive:false});
 function dropFruit(){
     if(gs.gameOver||gs.won||gs.dropping)return;
     const f=fruitTypes[gs.nextFruit];
