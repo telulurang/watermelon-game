@@ -4,6 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🍉 수박게임</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyAblm8T1_tygTGNm27GMv9pyOGHNX3JA7c",
+      authDomain: "watermelon-game-f7569.firebaseapp.com",
+      projectId: "watermelon-game-f7569",
+      storageBucket: "watermelon-game-f7569.firebasestorage.app",
+      messagingSenderId: "44347440824",
+      appId: "1:44347440824:web:dd7c9d5765c2a8dc23fe4d"
+    });
+    window.db = firebase.firestore();
+  </script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -100,7 +113,7 @@
 
   <div class="ranking">
     <h2>🏆 랭킹 TOP 10</h2>
-    <ul class="rlist" id="rlist"><li class="r-empty">미리보기 모드 (Firebase 미연결)</li></ul>
+    <ul class="rlist" id="rlist"><li class="r-empty">아직 기록이 없어요!</li></ul>
   </div>
   <div class="instructions">💡 클릭해서 과일을 떨어뜨리세요!<br>같은 과일끼리 합쳐집니다</div>
 </div>
@@ -332,9 +345,19 @@ document.getElementById('confirmYes').addEventListener('click',()=>{
   finalScoreEl.textContent=gs.score;
   gameOverBox.style.display='block';
 });
-document.getElementById('rankBtn').addEventListener('click',()=>alert('미리보기 모드에서는 랭킹을 불러올 수 없어요!'));
-document.getElementById('overSubmit').addEventListener('click',()=>alert('미리보기 모드에서는 랭킹 등록이 안 돼요!'));
-document.getElementById('winSubmit').addEventListener('click',()=>alert('미리보기 모드에서는 랭킹 등록이 안 돼요!'));
+document.getElementById('rankBtn').addEventListener('click', showRankPopup);
+document.getElementById('overSubmit').addEventListener('click', async()=>{
+  const name=document.getElementById('overName').value.trim();
+  if(!name){alert('닉네임을 입력해주세요!');return;}
+  await fbSave(gs.score,name);
+  await renderRanking();
+});
+document.getElementById('winSubmit').addEventListener('click', async()=>{
+  const name=document.getElementById('winName').value.trim();
+  if(!name){alert('닉네임을 입력해주세요!');return;}
+  await fbSave(gs.score,name);
+  await renderRanking();
+});
 
 gameLoop();
 </script>
