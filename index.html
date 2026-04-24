@@ -416,6 +416,21 @@ function dropFruit(){
 }
 canvas.addEventListener('click',dropFruit);
 canvas.addEventListener('touchend',e=>{e.preventDefault();dropFruit();});
+document.addEventListener('click',e=>{
+    if(e.target===canvas)return; // 캔버스는 위에서 처리
+    const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
+    const x=(e.clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
+    gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
+    dropFruit();
+});
+document.addEventListener('touchend',e=>{
+    if(e.target===canvas)return;
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
+    const x=(e.changedTouches[0].clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
+    gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
+    dropFruit();
+},{passive:false});
 
 function doReset(){
     if(rafId)cancelAnimationFrame(rafId);
