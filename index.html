@@ -32,19 +32,12 @@
       padding:15px; width:420px; max-width:100%;
     }
     h1 { text-align:center; font-size:1.4em; margin-bottom:10px; color:#333; }
-    .score-row {
-      display:flex; align-items:center; justify-content:space-between;
-      margin-bottom:10px; gap:6px;
-    }
+    .score-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:6px; }
     .side-btns { display:flex; flex-direction:column; gap:5px; }
     .score-box { text-align:center; background:#d4edda; padding:8px 16px; border-radius:10px; flex-shrink:0; }
     .score-label { font-size:0.75em; color:#666; }
     .score-value { font-size:1.5em; font-weight:bold; color:#28a745; }
-    .sbtn {
-      padding:6px 10px; border:none; border-radius:8px;
-      font-size:0.78em; font-weight:bold; cursor:pointer;
-      transition:all .2s; white-space:nowrap; color:white;
-    }
+    .sbtn { padding:6px 10px; border:none; border-radius:8px; font-size:0.78em; font-weight:bold; cursor:pointer; transition:all .2s; white-space:nowrap; color:white; }
     .sbtn:hover { transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,.15); }
     .btn-end   { background:linear-gradient(135deg,#dc3545,#fd7e14); padding:12px 10px; }
     .btn-reset { background:linear-gradient(135deg,#28a745,#17a2b8); padding:12px 10px; }
@@ -56,20 +49,27 @@
     .alert.yel p { color:#856404; font-weight:bold; }
     .name-row { display:flex; gap:6px; margin-top:8px; justify-content:center; }
     .name-input { padding:6px 10px; border:2px solid #ccc; border-radius:8px; font-size:.9em; width:180px; outline:none; }
+    .name-input:focus { border-color:#28a745; }
     .name-btn { padding:6px 14px; background:#28a745; color:white; border:none; border-radius:8px; font-size:.9em; font-weight:bold; cursor:pointer; }
-    #gameCanvas {
-      border:4px solid #333; border-radius:10px;
-      cursor:pointer; display:block; margin:0 auto 10px;
-      touch-action:none; max-width:100%;
-    }
+    .name-btn:hover { background:#218838; }
+    .name-btn:disabled { opacity:.5; cursor:not-allowed; }
+    #gameCanvas { border:4px solid #333; border-radius:10px; cursor:pointer; display:block; margin:0 auto 10px; touch-action:none; max-width:100%; }
     .ranking { background:#f8f9fa; border-radius:12px; padding:12px; }
     .ranking h2 { text-align:center; font-size:1em; color:#555; margin-bottom:8px; }
-    .rlist { list-style:none; }
-    .rlist li { display:flex; align-items:center; gap:6px; padding:5px 8px; border-radius:8px; margin-bottom:4px; font-size:.85em; background:white; box-shadow:0 1px 3px rgba(0,0,0,.08); }
-    .r-empty { text-align:center; color:#bbb; padding:8px 0; }
+
     .instructions { text-align:center; color:#666; font-size:.82em; margin-top:8px; line-height:1.4; }
     .overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:1000; }
     .overlay.show { display:flex; }
+    .popup-box { background:white; border-radius:20px; padding:20px; width:360px; max-width:92vw; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+    .popup-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .popup-title { font-size:1.15em; font-weight:bold; color:#333; }
+    .close-x { background:#f0f0f0; border:none; border-radius:50%; width:32px; height:32px; font-size:1.1em; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .close-x:hover { background:#ddd; }
+    .rtable { width:100%; border-collapse:collapse; }
+    .rtable th { background:linear-gradient(135deg,#fbc2eb,#ffeaa7); padding:8px 6px; font-size:.83em; color:#555; border-bottom:2px solid #eee; }
+    .rtable td { padding:8px 6px; font-size:.83em; text-align:center; border-bottom:1px solid #f0f0f0; }
+    .rtable tr.mine-row td { background:#fffde7; font-weight:bold; }
+    .my-sep { text-align:center; color:#bbb; padding:4px; font-size:.85em; }
     .confirm-box { background:white; border-radius:16px; padding:24px; width:280px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.3); }
     .confirm-box p { font-size:1.05em; color:#333; margin-bottom:20px; }
     .confirm-btns { display:flex; gap:12px; justify-content:center; }
@@ -97,24 +97,20 @@
   <div id="gameOverBox" class="alert red">
     <p>게임 오버! 최종 점수: <span id="finalScore">0</span>점</p>
     <div class="name-row">
-      <input id="overName" class="name-input" placeholder="닉네임 (미리보기 전용)" maxlength="10">
+      <input id="overName" class="name-input" placeholder="닉네임 입력 (최대 10자)" maxlength="10">
       <button class="name-btn" id="overSubmit">등록 🏆</button>
     </div>
   </div>
   <div id="winBox" class="alert yel">
     <p>🎉 수박 완성! 최종 점수: <span id="winScore">0</span>점!</p>
     <div class="name-row">
-      <input id="winName" class="name-input" placeholder="닉네임 (미리보기 전용)" maxlength="10">
+      <input id="winName" class="name-input" placeholder="닉네임 입력 (최대 10자)" maxlength="10">
       <button class="name-btn" id="winSubmit">등록 🏆</button>
     </div>
   </div>
 
   <canvas id="gameCanvas" width="400" height="450"></canvas>
 
-  <div class="ranking">
-    <h2>🏆 랭킹 TOP 10</h2>
-    <ul class="rlist" id="rlist"><li class="r-empty">아직 기록이 없어요!</li></ul>
-  </div>
   <div class="instructions">💡 클릭해서 과일을 떨어뜨리세요!<br>같은 과일끼리 합쳐집니다</div>
 </div>
 
@@ -128,238 +124,454 @@
   </div>
 </div>
 
+<div class="overlay" id="rankPopup">
+  <div class="popup-box">
+    <div class="popup-head">
+      <div class="popup-title">🏆 전체 랭킹</div>
+      <button class="close-x" id="closeRank">×</button>
+    </div>
+    <div id="rankBody"></div>
+  </div>
+</div>
+
 <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const scoreEl      = document.getElementById('score');
-const finalScoreEl = document.getElementById('finalScore');
-const winScoreEl   = document.getElementById('winScore');
-const gameOverBox  = document.getElementById('gameOverBox');
-const winBox       = document.getElementById('winBox');
+// ───────────────────────────────
+// 🎵 BGM + 삐요용 효과음
+// ───────────────────────────────
+const WM_BGM = (function(){
+    let ctx=null, masterGain=null, loop=null, started=false, playing=false;
+    const NF={C:261.63,D:293.66,E:329.63,F:349.23,G:392.00,A:440.00,B:493.88};
+    function fr(n,o){return NF[n]*Math.pow(2,o-4);}
+
+    const MELODY=[
+        ['C',5,0.12,0.00],['C',5,0.12,0.16],['C',5,0.12,0.32],
+        ['E',5,0.18,0.52],['G',5,0.18,0.76],
+        ['E',5,0.12,1.05],['E',5,0.12,1.20],['E',5,0.12,1.35],
+        ['C',5,0.25,1.55],
+        ['G',5,0.12,1.95],['G',5,0.12,2.10],['G',5,0.12,2.25],
+        ['A',5,0.18,2.45],['G',5,0.18,2.68],
+        ['F',5,0.12,2.95],['E',5,0.12,3.10],['D',5,0.12,3.25],
+        ['C',5,0.30,3.45],
+        ['E',5,0.10,3.90],['G',5,0.10,4.04],['C',6,0.10,4.18],
+        ['G',5,0.10,4.32],['E',5,0.10,4.46],['C',5,0.10,4.60],
+        ['D',5,0.12,4.80],['D',5,0.12,4.96],['D',5,0.12,5.12],
+        ['F',5,0.18,5.32],['A',5,0.18,5.55],
+        ['G',5,0.12,5.80],['F',5,0.12,5.95],['E',5,0.12,6.10],
+        ['D',5,0.12,6.28],['E',5,0.12,6.44],['F',5,0.12,6.60],
+        ['G',5,0.35,6.78],
+        ['C',5,0.10,7.25],['E',5,0.10,7.38],['G',5,0.10,7.51],
+        ['C',6,0.10,7.64],['G',5,0.10,7.77],['E',5,0.10,7.90],
+        ['C',5,0.50,8.05],
+    ];
+    const BASS=[
+        ['C',3,0.10,0.00],['G',3,0.10,0.52],
+        ['C',3,0.10,1.05],['G',3,0.10,1.55],
+        ['C',3,0.10,1.95],['F',3,0.10,2.45],
+        ['G',3,0.10,2.95],['C',3,0.10,3.45],
+        ['C',3,0.10,3.90],['G',3,0.10,4.32],
+        ['D',3,0.10,4.80],['A',3,0.10,5.32],
+        ['G',3,0.10,5.80],['G',3,0.10,6.28],
+        ['C',3,0.10,6.78],['G',3,0.10,7.25],
+        ['C',3,0.18,8.05],
+    ];
+    const LEN=8.70;
+
+    function note(n,o,dur,when,vol){
+        const osc=ctx.createOscillator(), g=ctx.createGain();
+        osc.type='triangle';
+        osc.frequency.setValueAtTime(fr(n,o),when);
+        g.gain.setValueAtTime(0,when);
+        g.gain.linearRampToValueAtTime(vol,when+0.010);
+        g.gain.exponentialRampToValueAtTime(vol*0.2,when+dur*0.5);
+        g.gain.exponentialRampToValueAtTime(0.0001,when+dur);
+        osc.connect(g); g.connect(masterGain);
+        osc.start(when); osc.stop(when+dur+0.04);
+    }
+    function schedule(){
+        if(!playing)return;
+        const now=ctx.currentTime;
+        MELODY.forEach(([n,o,d,t])=>note(n,o,d,now+t,0.22));
+        BASS.forEach(([n,o,d,t])=>note(n,o,d,now+t,0.10));
+        loop=setTimeout(schedule,(LEN-0.05)*1000);
+    }
+    function setup(){
+        ctx=new(window.AudioContext||window.webkitAudioContext)();
+        masterGain=ctx.createGain(); masterGain.gain.value=0.7; masterGain.connect(ctx.destination);
+    }
+    function playDrop(){
+        if(!ctx)return;
+        if(ctx.state==='suspended')ctx.resume();
+        const now=ctx.currentTime;
+        const osc=ctx.createOscillator(), g=ctx.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(400,now);
+        osc.frequency.linearRampToValueAtTime(900,now+0.08);
+        osc.frequency.exponentialRampToValueAtTime(300,now+0.25);
+        g.gain.setValueAtTime(0,now);
+        g.gain.linearRampToValueAtTime(0.35,now+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,now+0.28);
+        osc.connect(g); g.connect(masterGain);
+        osc.start(now); osc.stop(now+0.30);
+    }
+    return {
+        start(){
+            if(started)return;
+            started=true; setup();
+            if(ctx.state==='suspended')ctx.resume();
+            playing=true; schedule();
+        },
+        restart(){
+            if(!started)return;
+            clearTimeout(loop); playing=false;
+            if(ctx.state==='suspended')ctx.resume();
+            playing=true; schedule();
+        },
+        drop(){ playDrop(); }
+    };
+})();
+
+function initAudio(){
+    WM_BGM.start();
+    document.removeEventListener('click', initAudio);
+    document.removeEventListener('touchend', initAudio);
+}
+document.addEventListener('click', initAudio);
+document.addEventListener('touchend', initAudio);
+
+// ───────────────────────────────
+// 🔥 Firebase 랭킹
+// ───────────────────────────────
+let myRankId = null;
+const medals = ['🥇','🥈','🥉'];
+
+async function fbSave(score, name){
+    try {
+        const now = new Date();
+        const date = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const ref = await window.db.collection('rankings').add({
+            score, name: name||'익명', date,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        return ref.id;
+    } catch(e){ return null; }
+}
+
+async function fbLoad(){
+    try {
+        const snap = await window.db.collection('rankings').orderBy('score','desc').limit(50).get();
+        return snap.docs.map(d=>({id:d.id,...d.data()}));
+    } catch(e){ return []; }
+}
+
+async function renderRanking(){
+    const list = await fbLoad();
+    const rlist = document.getElementById('rlist');
+    if(!list.length){ rlist.innerHTML='<li class="r-empty">아직 기록이 없어요!</li>'; return; }
+    const top10 = list.slice(0,10);
+    const myIdx = myRankId ? list.findIndex(r=>r.id===myRankId) : -1;
+    let html = top10.map((r,i)=>{
+        const mine = myRankId && r.id===myRankId;
+        return `<li class="${mine?'mine':''}">
+          <span class="r-medal">${medals[i]??(i+1)}</span>
+          <span class="r-name">${r.name}</span>
+          <span class="r-score">${r.score.toLocaleString()}점</span>
+          <span class="r-date">${r.date}${mine?' 👈':''}</span>
+        </li>`;
+    }).join('');
+    if(myIdx>=10){
+        const r=list[myIdx];
+        html+=`<li class="sep">···</li>
+        <li class="mine">
+          <span class="r-medal">${myIdx+1}위</span>
+          <span class="r-name">${r.name}</span>
+          <span class="r-score">${r.score.toLocaleString()}점</span>
+          <span class="r-date">${r.date} 👈</span>
+        </li>`;
+    }
+    rlist.innerHTML = html;
+}
+
+async function showRankPopup(){
+    document.getElementById('rankPopup').classList.add('show');
+    const body = document.getElementById('rankBody');
+    body.innerHTML='<p style="text-align:center;color:#aaa;padding:20px;">불러오는 중...</p>';
+    const list = await fbLoad();
+    if(!list.length){ body.innerHTML='<p style="text-align:center;color:#aaa;padding:20px;">아직 기록이 없어요!</p>'; return; }
+    const top10 = list.slice(0,10);
+    const myIdx = myRankId ? list.findIndex(r=>r.id===myRankId) : -1;
+    let rows = top10.map((r,i)=>{
+        const mine = myRankId && r.id===myRankId;
+        return `<tr class="${mine?'mine-row':''}">
+          <td>${medals[i]??(i+1+'위')}</td>
+          <td>${r.name}</td><td>${r.score.toLocaleString()}점</td><td>${r.date}</td>
+        </tr>`;
+    }).join('');
+    if(myIdx>=10){
+        const r=list[myIdx];
+        rows+=`<tr><td colspan="4" class="my-sep">···</td></tr>
+        <tr class="mine-row"><td>${myIdx+1}위</td><td>${r.name}</td><td>${r.score.toLocaleString()}점</td><td>${r.date}</td></tr>`;
+    }
+    body.innerHTML=`<table class="rtable">
+      <thead><tr><th>순위</th><th>닉네임</th><th>점수</th><th>날짜</th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
+}
+
+function bindSubmit(inputId, btnId, alertEl){
+    const input=document.getElementById(inputId), btn=document.getElementById(btnId);
+    const go = async()=>{
+        const name=input.value.trim();
+        if(!name){ input.style.borderColor='#dc3545'; input.focus(); return; }
+        input.style.borderColor='#ccc';
+        btn.disabled=true; btn.textContent='저장 중...';
+        myRankId = await fbSave(gs.score, name);
+        alertEl.querySelector('.name-row').style.display='none';
+        await renderRanking();
+        await showRankPopup();
+        btn.disabled=false; btn.textContent='등록 🏆';
+    };
+    btn.addEventListener('click', go);
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
+}
+
+// ───────────────────────────────
+// 🎮 게임 로직
+// ───────────────────────────────
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+const scoreEl=document.getElementById('score');
+const finalScoreEl=document.getElementById('finalScore');
+const winScoreEl=document.getElementById('winScore');
+const gameOverBox=document.getElementById('gameOverBox');
+const winBox=document.getElementById('winBox');
 
 const W=400, H=450, GRAVITY=0.6, GAMEOVER_Y=75, GAMEOVER_GRACE=500;
 
 const fruitTypes=[
-  {emoji:'🍒',  radius:15, points:1 },
-  {emoji:'🍋‍🟩', radius:20, points:3 },
-  {emoji:'🍇',  radius:20, points:6 },
-  {emoji:'🍊',  radius:25, points:10},
-  {emoji:'🍋',  radius:30, points:15},
-  {emoji:'🍎',  radius:35, points:21},
-  {emoji:'🍑',  radius:40, points:28},
-  {emoji:'🍍',  radius:55, points:36},
-  {emoji:'🥥',  radius:60, points:45},
-  {emoji:'🍈',  radius:70, points:55},
-  {emoji:'🍉',  radius:80, points:75},
+    {emoji:'🍒',  radius:15, points:1 },
+    {emoji:'🍋‍🟩', radius:20, points:3 },
+    {emoji:'🍇',  radius:20, points:6 },
+    {emoji:'🍊',  radius:25, points:10},
+    {emoji:'🍋',  radius:30, points:15},
+    {emoji:'🍎',  radius:35, points:21},
+    {emoji:'🍑',  radius:40, points:28},
+    {emoji:'🍍',  radius:55, points:36},
+    {emoji:'🥥',  radius:60, points:45},
+    {emoji:'🍈',  radius:70, points:55},
+    {emoji:'🍉',  radius:80, points:75},
 ];
 
 function newState(){
-  return{fruits:[],dropping:false,mouseX:200,frame:0,
-         score:0,gameOver:false,won:false,
-         nextFruit:Math.floor(Math.random()*5),
-         winMelon:null,explodeFrame:0};
+    return{fruits:[],dropping:false,mouseX:200,frame:0,
+           score:0,gameOver:false,won:false,
+           nextFruit:Math.floor(Math.random()*5),
+           winMelon:null,explodeFrame:0};
 }
 let gs=newState(), rafId=null;
 
 function triggerGameOver(){
-  if(gs.gameOver)return;
-  gs.gameOver=true;
-  finalScoreEl.textContent=gs.score;
-  gameOverBox.style.display='block';
+    if(gs.gameOver)return;
+    gs.gameOver=true;
+    finalScoreEl.textContent=gs.score;
+    gameOverBox.style.display='block';
 }
 
 function gameLoop(){
-  gs.frame++;
-  if(gs.winMelon){
-    gs.explodeFrame++;
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#fff5e6';ctx.fillRect(0,0,W,H);
-    const m=gs.winMelon,p=gs.explodeFrame/60;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    if(p<0.5){
-      const sc=1+p*0.8;
-      ctx.font=`${m.radius*2*sc}px Arial`;ctx.fillText('🍉',m.x,m.y);
-      ctx.fillStyle='#ff6b6b';ctx.font=`${30*sc}px Arial`;ctx.fillText('ㅋㅋㅋ',m.x,m.y-m.radius*1.5*sc);
-    }else if(p<1){
-      const ep=(p-0.5)*2;
-      for(let i=0;i<8;i++){
-        const a=(Math.PI*2*i)/8,d=ep*150;
-        ctx.font=`${30*(1-ep)}px Arial`;
-        ctx.fillText('💥',m.x+Math.cos(a)*d,m.y+Math.sin(a)*d);
-      }
-      ctx.font=`${80*(1-ep)}px Arial`;ctx.fillText('⭐',m.x,m.y);
-    }else{
-      gs.won=true;winScoreEl.textContent=gs.score;winBox.style.display='block';
-    }
-    rafId=requestAnimationFrame(gameLoop);return;
-  }
-  if(gs.gameOver)return;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#fff5e6';ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#8b4513';
-  ctx.fillRect(0,0,10,H);ctx.fillRect(W-10,0,10,H);ctx.fillRect(0,H-10,W,10);
-  ctx.strokeStyle='#ff0000';ctx.setLineDash([5,5]);ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(10,GAMEOVER_Y);ctx.lineTo(W-10,GAMEOVER_Y);ctx.stroke();
-  ctx.setLineDash([]);
-  if(!gs.dropping){
-    const f=fruitTypes[gs.nextFruit];
-    ctx.font=`${f.radius*2}px Arial`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(f.emoji,gs.mouseX,GAMEOVER_Y/2);
-  }
-  gs.fruits.forEach(fruit=>{
-    fruit.vy+=GRAVITY;
-    const onGround=fruit.y+fruit.radius>=H-11;
-    const onOther=gs.fruits.some(o=>{
-      if(o===fruit)return false;
-      const dx=o.x-fruit.x,dy=o.y-fruit.y;
-      return Math.sqrt(dx*dx+dy*dy)<fruit.radius+o.radius+2;
-    });
-    fruit.isMoving=Math.abs(fruit.vy)>0.5||Math.abs(fruit.vx)>0.5;
-    if(onGround||onOther){fruit.vy*=0.7;fruit.vx*=0.6;}
-    else{fruit.vy*=0.98;fruit.vx*=0.96;}
-    fruit.x+=fruit.vx;fruit.y+=fruit.vy;
-    if(fruit.x-fruit.radius<10){fruit.x=10+fruit.radius;fruit.vx=Math.abs(fruit.vx)*0.2;}
-    if(fruit.x+fruit.radius>W-10){fruit.x=W-10-fruit.radius;fruit.vx=-Math.abs(fruit.vx)*0.2;}
-    if(fruit.y+fruit.radius>H-10){
-      fruit.y=H-10-fruit.radius;
-      fruit.vy=-Math.abs(fruit.vy)*0.05;fruit.vx*=0.6;
-      if(Math.abs(fruit.vy)<0.3&&Math.abs(fruit.vx)<0.3){fruit.vy=0;fruit.vx=0;}
-    }
-    fruit.isColliding=fruit.lastHit&&(Date.now()-fruit.lastHit<1000);
-  });
-  for(let it=0;it<3;it++){
-    for(let i=0;i<gs.fruits.length;i++){
-      for(let j=i+1;j<gs.fruits.length;j++){
-        const a=gs.fruits[i],b=gs.fruits[j];
-        const dx=b.x-a.x,dy=b.y-a.y,dist=Math.sqrt(dx*dx+dy*dy),minD=a.radius+b.radius;
-        if(dist<minD&&dist>0){
-          if(a.type===b.type&&a.type<10&&!a.merging&&!b.merging){
-            a.merging=b.merging=true;
-            const nt=a.type+1,mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
-            setTimeout(()=>{
-              const i1=gs.fruits.indexOf(a);if(i1!==-1)gs.fruits.splice(i1,1);
-              const i2=gs.fruits.indexOf(b);if(i2!==-1)gs.fruits.splice(i2,1);
-              const nf={x:mx,y:my,vx:0,vy:0,type:nt,radius:fruitTypes[nt].radius,
-                        merging:false,isMoving:false,isColliding:false,lastHit:null,spawnTime:Date.now()};
-              gs.fruits.push(nf);
-              gs.score+=fruitTypes[nt].points;
-              scoreEl.textContent=gs.score;
-              if(nt===10){gs.winMelon=nf;gs.explodeFrame=0;}
-            },50);
-            continue;
-          }
-          const ov=minD-dist,nx=dx/dist,ny=dy/dist;
-          const sp=Math.abs(a.vx)+Math.abs(a.vy)+Math.abs(b.vx)+Math.abs(b.vy);
-          if(sp>2){a.lastHit=b.lastHit=Date.now();}
-          a.x-=nx*ov*0.5;a.y-=ny*ov*0.5;b.x+=nx*ov*0.5;b.y+=ny*ov*0.5;
-          const rv=b.vx-a.vx,ry=b.vy-a.vy,dot=rv*nx+ry*ny;
-          if(dot<0){const imp=dot*0.15;a.vx+=imp*nx;a.vy+=imp*ny;b.vx-=imp*nx;b.vy-=imp*ny;}
-          const cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
-          a.x=cl(a.x,10+a.radius,W-10-a.radius);a.y=cl(a.y,a.radius,H-10-a.radius);
-          b.x=cl(b.x,10+b.radius,W-10-b.radius);b.y=cl(b.y,b.radius,H-10-b.radius);
+    gs.frame++;
+    if(gs.winMelon){
+        gs.explodeFrame++;
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle='#fff5e6'; ctx.fillRect(0,0,W,H);
+        const m=gs.winMelon, p=gs.explodeFrame/60;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        if(p<0.5){
+            const sc=1+p*0.8;
+            ctx.font=`${m.radius*2*sc}px Arial`; ctx.fillText('🍉',m.x,m.y);
+            ctx.fillStyle='#ff6b6b'; ctx.font=`${30*sc}px Arial`; ctx.fillText('ㅋㅋㅋ',m.x,m.y-m.radius*1.5*sc);
+        } else if(p<1){
+            const ep=(p-0.5)*2;
+            for(let i=0;i<8;i++){
+                const a=(Math.PI*2*i)/8, d=ep*150;
+                ctx.font=`${30*(1-ep)}px Arial`;
+                ctx.fillText('💥',m.x+Math.cos(a)*d,m.y+Math.sin(a)*d);
+            }
+            ctx.font=`${80*(1-ep)}px Arial`; ctx.fillText('⭐',m.x,m.y);
+        } else {
+            gs.won=true; winScoreEl.textContent=gs.score; winBox.style.display='block';
         }
-      }
+        rafId=requestAnimationFrame(gameLoop); return;
     }
-  }
-  gs.fruits.forEach(fruit=>{
-    if(fruit.merging)return;
-    const type=fruitTypes[fruit.type];
-    ctx.save();ctx.translate(fruit.x,fruit.y);
-    ctx.font=`${fruit.radius*2}px Arial`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(type.emoji,0,0);ctx.restore();
-    ctx.fillStyle='#000';
-    const eyeY=fruit.y-fruit.radius*0.2,eyeSz=fruit.isColliding?fruit.radius*0.25:fruit.radius*0.15;
-    ctx.beginPath();ctx.arc(fruit.x-fruit.radius*0.3,eyeY,eyeSz,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(fruit.x+fruit.radius*0.3,eyeY,eyeSz,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='#000';ctx.lineWidth=fruit.radius*0.1;
-    if(fruit.isColliding){
-      ctx.beginPath();ctx.moveTo(fruit.x,fruit.y+fruit.radius*0.1);
-      ctx.lineTo(fruit.x-fruit.radius*0.15,fruit.y+fruit.radius*0.35);
-      ctx.lineTo(fruit.x+fruit.radius*0.15,fruit.y+fruit.radius*0.35);
-      ctx.closePath();ctx.stroke();
-    }else{
-      ctx.beginPath();ctx.arc(fruit.x,fruit.y+fruit.radius*0.2,fruit.radius*0.3,0,Math.PI);ctx.stroke();
+    if(gs.gameOver)return;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff5e6'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#8b4513';
+    ctx.fillRect(0,0,10,H); ctx.fillRect(W-10,0,10,H); ctx.fillRect(0,H-10,W,10);
+    ctx.strokeStyle='#ff0000'; ctx.setLineDash([5,5]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(10,GAMEOVER_Y); ctx.lineTo(W-10,GAMEOVER_Y); ctx.stroke();
+    ctx.setLineDash([]);
+    if(!gs.dropping){
+        const f=fruitTypes[gs.nextFruit];
+        ctx.font=`${f.radius*2}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(f.emoji,gs.mouseX,GAMEOVER_Y/2);
     }
-    ctx.strokeStyle='#000';ctx.lineWidth=fruit.radius*0.15;ctx.lineCap='round';
-    const wave=fruit.isMoving?Math.sin(gs.frame*0.3)*0.3:0;
-    ctx.beginPath();ctx.moveTo(fruit.x-fruit.radius*0.7,fruit.y);
-    ctx.lineTo(fruit.x-fruit.radius*0.9,fruit.y-fruit.radius*(0.2+wave*0.5));ctx.stroke();
-    ctx.beginPath();ctx.moveTo(fruit.x+fruit.radius*0.7,fruit.y);
-    ctx.lineTo(fruit.x+fruit.radius*0.9,fruit.y-fruit.radius*(0.2-wave*0.5));ctx.stroke();
-  });
-  const now=Date.now();
-  for(const fruit of gs.fruits){
-    if(fruit.merging||now-fruit.spawnTime<GAMEOVER_GRACE)continue;
-    if(fruit.y-fruit.radius<GAMEOVER_Y){triggerGameOver();return;}
-  }
-  rafId=requestAnimationFrame(gameLoop);
+    gs.fruits.forEach(fruit=>{
+        fruit.vy+=GRAVITY;
+        const onGround=fruit.y+fruit.radius>=H-11;
+        const onOther=gs.fruits.some(o=>{
+            if(o===fruit)return false;
+            const dx=o.x-fruit.x, dy=o.y-fruit.y;
+            return Math.sqrt(dx*dx+dy*dy)<fruit.radius+o.radius+2;
+        });
+        fruit.isMoving=Math.abs(fruit.vy)>0.5||Math.abs(fruit.vx)>0.5;
+        if(onGround||onOther){fruit.vy*=0.7; fruit.vx*=0.6;}
+        else{fruit.vy*=0.98; fruit.vx*=0.96;}
+        fruit.x+=fruit.vx; fruit.y+=fruit.vy;
+        if(fruit.x-fruit.radius<10){fruit.x=10+fruit.radius; fruit.vx=Math.abs(fruit.vx)*0.2;}
+        if(fruit.x+fruit.radius>W-10){fruit.x=W-10-fruit.radius; fruit.vx=-Math.abs(fruit.vx)*0.2;}
+        if(fruit.y+fruit.radius>H-10){
+            fruit.y=H-10-fruit.radius;
+            fruit.vy=-Math.abs(fruit.vy)*0.05; fruit.vx*=0.6;
+            if(Math.abs(fruit.vy)<0.3&&Math.abs(fruit.vx)<0.3){fruit.vy=0; fruit.vx=0;}
+        }
+        fruit.isColliding=fruit.lastHit&&(Date.now()-fruit.lastHit<1000);
+    });
+    for(let it=0;it<3;it++){
+        for(let i=0;i<gs.fruits.length;i++){
+            for(let j=i+1;j<gs.fruits.length;j++){
+                const a=gs.fruits[i], b=gs.fruits[j];
+                const dx=b.x-a.x, dy=b.y-a.y, dist=Math.sqrt(dx*dx+dy*dy), minD=a.radius+b.radius;
+                if(dist<minD&&dist>0){
+                    if(a.type===b.type&&a.type<10&&!a.merging&&!b.merging){
+                        a.merging=b.merging=true;
+                        const nt=a.type+1, mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+                        setTimeout(()=>{
+                            const i1=gs.fruits.indexOf(a); if(i1!==-1)gs.fruits.splice(i1,1);
+                            const i2=gs.fruits.indexOf(b); if(i2!==-1)gs.fruits.splice(i2,1);
+                            const nf={x:mx,y:my,vx:0,vy:0,type:nt,radius:fruitTypes[nt].radius,
+                                      merging:false,isMoving:false,isColliding:false,lastHit:null,spawnTime:Date.now()};
+                            gs.fruits.push(nf);
+                            gs.score+=fruitTypes[nt].points;
+                            scoreEl.textContent=gs.score;
+                            if(nt===10){gs.winMelon=nf; gs.explodeFrame=0;}
+                        },50);
+                        continue;
+                    }
+                    const ov=minD-dist, nx=dx/dist, ny=dy/dist;
+                    const sp=Math.abs(a.vx)+Math.abs(a.vy)+Math.abs(b.vx)+Math.abs(b.vy);
+                    if(sp>2){a.lastHit=b.lastHit=Date.now();}
+                    a.x-=nx*ov*0.5; a.y-=ny*ov*0.5; b.x+=nx*ov*0.5; b.y+=ny*ov*0.5;
+                    const rv=b.vx-a.vx, ry=b.vy-a.vy, dot=rv*nx+ry*ny;
+                    if(dot<0){const imp=dot*0.15; a.vx+=imp*nx; a.vy+=imp*ny; b.vx-=imp*nx; b.vy-=imp*ny;}
+                    const cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+                    a.x=cl(a.x,10+a.radius,W-10-a.radius); a.y=cl(a.y,a.radius,H-10-a.radius);
+                    b.x=cl(b.x,10+b.radius,W-10-b.radius); b.y=cl(b.y,b.radius,H-10-b.radius);
+                }
+            }
+        }
+    }
+    gs.fruits.forEach(fruit=>{
+        if(fruit.merging)return;
+        const type=fruitTypes[fruit.type];
+        ctx.save(); ctx.translate(fruit.x,fruit.y);
+        ctx.font=`${fruit.radius*2}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(type.emoji,0,0); ctx.restore();
+        ctx.fillStyle='#000';
+        const eyeY=fruit.y-fruit.radius*0.2, eyeSz=fruit.isColliding?fruit.radius*0.25:fruit.radius*0.15;
+        ctx.beginPath(); ctx.arc(fruit.x-fruit.radius*0.3,eyeY,eyeSz,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(fruit.x+fruit.radius*0.3,eyeY,eyeSz,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='#000'; ctx.lineWidth=fruit.radius*0.1;
+        if(fruit.isColliding){
+            ctx.beginPath(); ctx.moveTo(fruit.x,fruit.y+fruit.radius*0.1);
+            ctx.lineTo(fruit.x-fruit.radius*0.15,fruit.y+fruit.radius*0.35);
+            ctx.lineTo(fruit.x+fruit.radius*0.15,fruit.y+fruit.radius*0.35);
+            ctx.closePath(); ctx.stroke();
+        } else {
+            ctx.beginPath(); ctx.arc(fruit.x,fruit.y+fruit.radius*0.2,fruit.radius*0.3,0,Math.PI); ctx.stroke();
+        }
+        ctx.strokeStyle='#000'; ctx.lineWidth=fruit.radius*0.15; ctx.lineCap='round';
+        const wave=fruit.isMoving?Math.sin(gs.frame*0.3)*0.3:0;
+        ctx.beginPath(); ctx.moveTo(fruit.x-fruit.radius*0.7,fruit.y);
+        ctx.lineTo(fruit.x-fruit.radius*0.9,fruit.y-fruit.radius*(0.2+wave*0.5)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(fruit.x+fruit.radius*0.7,fruit.y);
+        ctx.lineTo(fruit.x+fruit.radius*0.9,fruit.y-fruit.radius*(0.2-wave*0.5)); ctx.stroke();
+    });
+    const now=Date.now();
+    for(const fruit of gs.fruits){
+        if(fruit.merging||now-fruit.spawnTime<GAMEOVER_GRACE)continue;
+        if(fruit.y-fruit.radius<GAMEOVER_Y){triggerGameOver(); return;}
+    }
+    rafId=requestAnimationFrame(gameLoop);
 }
 
 canvas.addEventListener('mousemove',e=>{
-  if(gs.gameOver)return;
-  const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
-  const x=(e.clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
-  gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
+    if(gs.gameOver)return;
+    const rect=canvas.getBoundingClientRect(), sx=W/rect.width;
+    const x=(e.clientX-rect.left)*sx, r=fruitTypes[gs.nextFruit].radius;
+    gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
 });
 canvas.addEventListener('touchmove',e=>{
-  if(gs.gameOver)return;e.preventDefault();
-  const rect=canvas.getBoundingClientRect(),sx=W/rect.width;
-  const x=(e.touches[0].clientX-rect.left)*sx,r=fruitTypes[gs.nextFruit].radius;
-  gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
+    if(gs.gameOver)return; e.preventDefault();
+    const rect=canvas.getBoundingClientRect(), sx=W/rect.width;
+    const x=(e.touches[0].clientX-rect.left)*sx, r=fruitTypes[gs.nextFruit].radius;
+    gs.mouseX=Math.max(10+r,Math.min(W-10-r,x));
 },{passive:false});
 
 function dropFruit(){
-  if(gs.gameOver||gs.won||gs.dropping)return;
-  const f=fruitTypes[gs.nextFruit];
-  gs.fruits.push({x:gs.mouseX,y:GAMEOVER_Y/2,vx:0,vy:0,type:gs.nextFruit,radius:f.radius,
-                  merging:false,isMoving:true,isColliding:false,lastHit:null,spawnTime:Date.now()});
-  gs.dropping=true;
-  setTimeout(()=>{gs.dropping=false;gs.nextFruit=Math.floor(Math.random()*5);},500);
+    if(gs.gameOver||gs.won||gs.dropping)return;
+    const f=fruitTypes[gs.nextFruit];
+    gs.fruits.push({x:gs.mouseX,y:GAMEOVER_Y/2,vx:0,vy:0,type:gs.nextFruit,radius:f.radius,
+                    merging:false,isMoving:true,isColliding:false,lastHit:null,spawnTime:Date.now()});
+    gs.dropping=true;
+    WM_BGM.drop();
+    setTimeout(()=>{gs.dropping=false; gs.nextFruit=Math.floor(Math.random()*5);},500);
 }
 canvas.addEventListener('click',dropFruit);
-canvas.addEventListener('touchend',e=>{e.preventDefault();dropFruit();});
+canvas.addEventListener('touchend',e=>{e.preventDefault(); dropFruit();});
 
 function doReset(){
-  if(rafId)cancelAnimationFrame(rafId);
-  gs=newState();
-  scoreEl.textContent='0';
-  gameOverBox.style.display='none';winBox.style.display='none';
-  gameOverBox.querySelector('.name-row').style.display='flex';
-  winBox.querySelector('.name-row').style.display='flex';
-  document.getElementById('overName').value='';
-  document.getElementById('winName').value='';
-  gameLoop();
+    if(rafId)cancelAnimationFrame(rafId);
+    myRankId=null; gs=newState();
+    scoreEl.textContent='0';
+    gameOverBox.style.display='none'; winBox.style.display='none';
+    gameOverBox.querySelector('.name-row').style.display='flex';
+    winBox.querySelector('.name-row').style.display='flex';
+    document.getElementById('overName').value='';
+    document.getElementById('winName').value='';
+    WM_BGM.restart();
+    gameLoop();
 }
 
 document.getElementById('resetBtn').addEventListener('click',doReset);
 document.getElementById('endBtn').addEventListener('click',()=>{
-  document.getElementById('confirmOverlay').classList.add('show');
+    document.getElementById('confirmOverlay').classList.add('show');
 });
 document.getElementById('confirmNo').addEventListener('click',()=>{
-  document.getElementById('confirmOverlay').classList.remove('show');
+    document.getElementById('confirmOverlay').classList.remove('show');
 });
 document.getElementById('confirmYes').addEventListener('click',()=>{
-  document.getElementById('confirmOverlay').classList.remove('show');
-  if(rafId)cancelAnimationFrame(rafId);
-  gs.gameOver=true;
-  finalScoreEl.textContent=gs.score;
-  gameOverBox.style.display='block';
+    document.getElementById('confirmOverlay').classList.remove('show');
+    if(rafId)cancelAnimationFrame(rafId);
+    gs.gameOver=true;
+    finalScoreEl.textContent=gs.score;
+    gameOverBox.style.display='block';
 });
-document.getElementById('rankBtn').addEventListener('click', showRankPopup);
-document.getElementById('overSubmit').addEventListener('click', async()=>{
-  const name=document.getElementById('overName').value.trim();
-  if(!name){alert('닉네임을 입력해주세요!');return;}
-  await fbSave(gs.score,name);
-  await renderRanking();
+document.getElementById('rankBtn').addEventListener('click',showRankPopup);
+document.getElementById('closeRank').addEventListener('click',()=>{
+    document.getElementById('rankPopup').classList.remove('show');
 });
-document.getElementById('winSubmit').addEventListener('click', async()=>{
-  const name=document.getElementById('winName').value.trim();
-  if(!name){alert('닉네임을 입력해주세요!');return;}
-  await fbSave(gs.score,name);
-  await renderRanking();
+document.getElementById('rankPopup').addEventListener('click',e=>{
+    if(e.target===document.getElementById('rankPopup'))
+        document.getElementById('rankPopup').classList.remove('show');
 });
 
-gameLoop();
+bindSubmit('overName','overSubmit',gameOverBox);
+bindSubmit('winName','winSubmit',winBox);
+
+// 새로고침 시 바로 시작 - DOMContentLoaded 보장
+if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', gameLoop);
+} else {
+    gameLoop();
+}
 </script>
 </body>
 </html>
